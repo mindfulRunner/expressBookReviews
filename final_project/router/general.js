@@ -25,53 +25,141 @@ public_users.post("/register", (req,res) => {
 public_users.get('/',function (req, res) {
   //Write your code here
   // return res.status(300).json({message: "Yet to be implemented"});
-  res.send(JSON.stringify(books));
+  
+  // res.send(JSON.stringify(books));
+
+  // change to use Promise
+  const promise = new Promise((resolve, reject) => {
+    resolve(JSON.stringify(books));
+  });
+
+  promise.then(
+    data => res.send(data)
+  );
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
+  
   // return res.status(300).json({message: "Yet to be implemented"});
-  const isbn = req.params.isbn;
-  const matchedBook = books[isbn];
-  if (matchedBook) {
-    res.send(matchedBook);
-  } else {
-    res.send('no book is found with this ISBN');
-  }
+  // const isbn = req.params.isbn;
+  // const matchedBook = books[isbn];
+  // res.send(matchedBook);
+
+  // change to use Promise
+  const promise = new Promise((resolve, reject) => {
+    const isbn = req.params.isbn;
+    const matchedBook = books[isbn];
+    console.log(`isbn: ${isbn}, matchedBook: ${JSON.stringify(matchedBook)}`);
+    if (matchedBook) {
+      console.log(`if, matchedBook: ${matchedBook}`);
+      resolve(matchedBook);
+    } else {
+      console.log(`else, matchedBook: ${matchedBook}`);
+      reject(new Error('no book is found with this ISBN'));
+    }
+  });
+
+  promise
+    .then(data => {
+      console.log(`data: ${JSON.stringify(data)}`);
+      res.send(data)
+    })
+    .catch(error => {
+      console.log(`error: ${error.message}`);
+      res.status(404).send(`error: ${error.message}`);
+    });
  });
   
-// Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+// // Get book details based on author
+// public_users.get('/author/:author',function (req, res) {
+//   //Write your code here
+//   // return res.status(300).json({message: "Yet to be implemented"});
+//   const author = req.params.author;
+//   const matchedBooks = Object.keys(books)
+//     .filter(isbn => books[isbn]["author"] === author)
+//     .map(isbn => {
+//       const matchedBook = { isbn, ...books[isbn] };
+//       console.log(`matchedBook: ${JSON.stringify(matchedBook)}`);
+//       return matchedBook;
+//     });
+//   if (matchedBooks) {
+//     res.send(JSON.stringify(matchedBooks));
+//   } else {
+//     res.send('no book is found with this author');
+//   }
+// });
+
+// Get book details based on author (using Promise, async, await)
+public_users.get('/author/:author', async function (req, res) {
   //Write your code here
   // return res.status(300).json({message: "Yet to be implemented"});
-  const author = req.params.author;
-  const matchedBooks = Object.keys(books)
-    .filter(isbn => books[isbn]["author"] === author)
-    .map(isbn => {
-      const matchedBook = { isbn, ...books[isbn] };
-      console.log(`matchedBook: ${JSON.stringify(matchedBook)}`);
-      return matchedBook;
-    });
-  if (matchedBooks) {
-    res.send(JSON.stringify(matchedBooks));
-  } else {
-    res.send('no book is found with this author');
+  const promise = new Promise((resolve, reject) => {
+    const author = req.params.author;
+    const matchedBooks = Object.keys(books)
+      .filter(isbn => books[isbn]["author"] === author)
+      .map(isbn => {
+        const matchedBook = { isbn, ...books[isbn] };
+        console.log(`matchedBook: ${JSON.stringify(matchedBook)}`);
+        return matchedBook;
+      });
+    if (matchedBooks.length > 0) {
+      resolve(matchedBooks);
+    } else {
+      reject(new Error('no book is found with this author'));
+    }
+  });
+
+  try {
+    const data = await promise;
+    console.log(`data: ${JSON.stringify(data)}`);
+    res.status(200).send(data);
+  } catch (error) {
+    console.log(`error: ${error.message}`);
+    res.status(404).send({error: error.message});
   }
 });
 
+// // Get all books based on title
+// public_users.get('/title/:title',function (req, res) {
+//   //Write your code here
+//   // return res.status(300).json({message: "Yet to be implemented"});
+//   const title = req.params.title;
+//   const matchedBooks = Object.keys(books)
+//     .filter(isbn => books[isbn]["title"] === title)
+//     .map(isbn => ({ isbn, ...books[isbn] }));
+//   if (matchedBooks) {
+//     res.send(JSON.stringify(matchedBooks));
+//   } else {
+//     res.send('no book is found with this title');
+//   }
+// });
+
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', async function (req, res) {
   //Write your code here
   // return res.status(300).json({message: "Yet to be implemented"});
+  const promise = new Promise((resolve, reject) => {
   const title = req.params.title;
   const matchedBooks = Object.keys(books)
     .filter(isbn => books[isbn]["title"] === title)
     .map(isbn => ({ isbn, ...books[isbn] }));
-  if (matchedBooks) {
-    res.send(JSON.stringify(matchedBooks));
-  } else {
-    res.send('no book is found with this title');
+    if (matchedBooks.length > 0) {
+      console.log(`matchedBooks: ${JSON.stringify(matchedBooks)}`);
+      resolve(JSON.stringify(matchedBooks));
+    } else {
+      reject(new Error('no book is found with this title'));
+    }
+  });
+
+  try {
+    const data = await promise;
+    console.log(`data: ${JSON.stringify(data)}`);
+    res.status(200).send(data);
+  } catch (error) {
+    console.log(`error: ${error.message}`);
+    res.status(404).send({error: error.message});
   }
 });
 
