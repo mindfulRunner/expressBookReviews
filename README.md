@@ -18,6 +18,20 @@ Express Book Reviews
 
 
 
+How to run
+
+	1. start server
+	
+		node index.js
+		
+		or
+		
+		nodemon index.js
+	
+	2. curl http://localhost:5000 or use Postman
+
+
+
 Reference:
 
 [Developing Back-End Apps with Node.js and Express](https://www.coursera.org/programs/capgemini-learning-program-71mtd/learn/developing-backend-apps-with-nodejs-and-express?authProvider=capgemini&specialization=ibm-full-stack-javascript-developer) (a course of [IBM Full-Stack JavaScript Developer Professional Certificate](https://www.coursera.org/professional-certificates/ibm-full-stack-javascript-developer))
